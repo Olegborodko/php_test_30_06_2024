@@ -1,0 +1,3 @@
+мне нужен пароль приложений,
+он используется вместо простого пароля для gmail
+https://myaccount.google.com/apppasswords

@@ -1,13 +1,16 @@
 <?php
+require_once '../service/EmailService.php';
 require_once '../models/TaskModel.php';
 
 class TaskController
 {
   private $taskModel;
+  private $emailInstance;
 
   public function __construct()
   {
     $this->taskModel = new TaskModel();
+    $this->emailInstance = new EmailService();
   }
 
   public function handleRequest()
@@ -43,7 +46,7 @@ class TaskController
       return;
     }
 
-    $result = $this->taskModel->saveTask(
+    $insertDb = $this->taskModel->saveTask(
       $data['fullname'],
       $data['email'],
       $data['duedate'],
@@ -51,8 +54,18 @@ class TaskController
       $data['description'],
     );
 
-    if ($result) {
-      echo json_encode(['status' => 'success']);
+    if ($insertDb) {
+      $sendEmail = $this->emailInstance->sendEmail(
+        $data['email'],
+        'new task ' . date('Y-m-d H:i:s'),
+        $data,
+      );
+      if ($sendEmail) {
+        echo json_encode(['status' => 'success']);
+      } else {
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => ['error send email']]);
+      }
     } else {
       http_response_code(500);
       echo json_encode(['status' => 'error', 'message' => ['error database']]);

@@ -1,0 +1,5 @@
+посмотреть php_error_log linux XAMPP-8.1.25
+sudo tail -n 50 /opt/lampp/logs/php_error_log
+
+очистить error log
+sudo truncate -s 0 /opt/lampp/logs/php_error_log
