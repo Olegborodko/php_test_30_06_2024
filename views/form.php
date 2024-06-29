@@ -1,4 +1,4 @@
-<form id="taskForm" class="taskForm">
+<form id="taskForm" class="taskForm" novalidate>
   <div class="mb-3">
     <label for="fullname" class="form-label">ФИО исполнителя:</label>
     <input type="text" class="form-control" id="fullname" name="fullname" required>
@@ -12,8 +12,8 @@
     <input type="text" class="form-control" id="duedate" name="duedate" required>
   </div>
   <div class="mb-3">
-    <label for="taskname" class="form-label">Название задачи:</label>
-    <input type="text" class="form-control" id="taskname" name="taskname" required>
+    <label for="title" class="form-label">Название задачи:</label>
+    <input type="text" class="form-control" id="title" name="title" required>
   </div>
   <div class="mb-3">
     <label for="description" class="form-label">Описание задачи:</label>
@@ -21,3 +21,5 @@
   </div>
   <button type="submit" class="btn btn-primary">Добавить задачу</button>
 </form>
+<div id="formErrors">
+</div>

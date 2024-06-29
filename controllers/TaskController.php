@@ -1,7 +1,15 @@
 <?php
+require_once '../models/TaskModel.php';
 
 class TaskController
 {
+  private $taskModel;
+
+  public function __construct()
+  {
+    $this->taskModel = new TaskModel();
+  }
+
   public function handleRequest()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -27,28 +35,27 @@ class TaskController
 
   private function submitTask($data)
   {
-    $errors = [];
-
-    if (empty($data['fullName']) || empty($data['email']) || empty($data['dueDate']) || empty($data['taskName']) || empty($data['taskDescription'])) {
-      $errors[] = 'не все поля заполнены';
-    }
-
-    if (strlen($data['taskDescription']) > 1000) {
-      $errors[] = 'описание задачи имеет больше 1000 символов';
-    }
-
-    if (!preg_match('/^\d{2}\.\d{2}\.\d{4}$/', $data['dueDate'])) {
-      $errors[] = 'дата должна быть в формате dd.mm.YYYY';
-    }
-
-    if (!filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-      $errors[] = 'e-mail введен некорректно';
-    }
+    $errors = $this->taskModel->validateTask($data);
 
     if (!empty($errors)) {
-      echo json_encode(['status' => 'success', 'message' => 'Задача обновлена успешно']);
+      http_response_code(400);
+      echo json_encode(['status' => 'error', 'message' => $errors]);
+      return;
+    }
+
+    $result = $this->taskModel->saveTask(
+      $data['fullname'],
+      $data['email'],
+      $data['duedate'],
+      $data['title'],
+      $data['description'],
+    );
+
+    if ($result) {
+      echo json_encode(['status' => 'success']);
     } else {
-      echo json_encode(['status' => 'success', 'message' => 'Задача обновлена успешно']);
+      http_response_code(500);
+      echo json_encode(['status' => 'error', 'message' => ['error database']]);
     }
   }
 

@@ -17,8 +17,20 @@ $(document).ready(function () {
         alert('Задача добавлена успешно');
         // $('#taskForm')[0].reset();
       },
-      error: function (xhr, status, error) {
-        console.log('Error: ' + error);
+      error: function (xhr) {
+        try {
+          var response = JSON.parse(xhr.responseText);
+          if (response.status === 'error') {
+            let formattedText = "<ul>";
+            for (let i = 0; i < response.message.length; i++) {
+              formattedText += `<li>${response.message[i]}</li>`;
+            }
+            formattedText += "</ul>";
+            $('#formErrors').html(formattedText);
+          }
+        } catch (e) {
+          console.error(e);
+        }
       }
     });
   });
