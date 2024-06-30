@@ -19,7 +19,7 @@
     <label for="description" class="form-label">Описание задачи:</label>
     <textarea class="form-control" id="description" name="description" maxlength="1000" required></textarea>
   </div>
-  <button type="submit" class="btn btn-primary">Добавить задачу</button>
+  <button type="submit" class="btn btn-primary submit">Добавить задачу</button>
 </form>
 <div id="formErrors">
 </div>

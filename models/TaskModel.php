@@ -51,4 +51,19 @@ class TaskModel
       return false;
     }
   }
+
+  public function getTasks(){
+    $query = 'SELECT id, full_name, title, created_at, due_date FROM tasks';
+
+    try {
+      $stmt = $this->connDb->prepare($query);
+      $stmt->execute();
+      
+      $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+      return $tasks;
+    } catch (PDOException $e) {
+      error_log('Database error: ' . $e->getMessage());
+      return false;
+    }
+  }
 }

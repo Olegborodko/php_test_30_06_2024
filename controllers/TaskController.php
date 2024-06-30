@@ -1,4 +1,6 @@
 <?php
+header('Content-Type: application/json');
+
 require_once '../service/EmailService.php';
 require_once '../models/TaskModel.php';
 
@@ -20,7 +22,7 @@ class TaskController
 
       switch ($action) {
         case 'submitTask':
-          $this->submitTask($_POST);
+          $this->insertTask($_POST);
           break;
         case 'deleteTask':
           $this->deleteTask($_POST);
@@ -30,13 +32,15 @@ class TaskController
           echo json_encode(['status' => 'error']);
           break;
       }
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
+      $this->getTasks();
     } else {
       http_response_code(405);
       echo json_encode(['status' => 'error']);
     }
   }
 
-  private function submitTask($data)
+  private function insertTask($data)
   {
     $errors = $this->taskModel->validateTask($data);
 
@@ -69,6 +73,17 @@ class TaskController
     } else {
       http_response_code(500);
       echo json_encode(['status' => 'error', 'message' => ['error database']]);
+    }
+  }
+
+  private function getTasks()
+  {
+    $data = $this->taskModel->getTasks();
+    if ($data) {
+      echo json_encode(['status' => 'success', 'data' => $data]);
+    } else {
+      http_response_code(404);
+      echo json_encode(['status' => 'error']);
     }
   }
 

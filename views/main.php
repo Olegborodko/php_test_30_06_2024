@@ -11,6 +11,7 @@
 </head>
 
 <body>
+  <?php require_once 'views/table.php'; ?>
   <?php require_once 'views/form.php'; ?>
 
   <script src="js/jquery.min.js"></script>
