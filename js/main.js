@@ -54,15 +54,35 @@ $(document).ready(function () {
             '<td>' + task.id + '</td>' +
             '<td>' + task.full_name + '</td>' +
             '<td>' + task.title + '</td>' +
+            '<td>' + task.description + '</td>' +
             '<td>' + task.created_at + '</td>' +
             '<td>' + task.due_date + '</td>' +
-            '<td></td>' +
+            '<td><button data-task="' + task.id + '" class="btn btn-info btnDeleteTask">Удалить</button></td>' +
             '</tr>';
           tableBody.append(row);
         });
+      },
+      error: function (xhr) {
+        console.error('Error: ', xhr.status, xhr.statusText);
       }
     });
   }
+
+  $(document).on('click', '#taskTable .btnDeleteTask', function () {
+    let taskId = $(this).attr("data-task");
+
+    $.ajax({
+      url: 'controllers/TaskController.php?taskId=' + taskId,
+      type: 'DELETE',
+      data: taskId,
+      success: function () {
+        refreshTasks();
+      },
+      error: function (xhr) {
+        console.error('Error: ', xhr.status, xhr.statusText);
+      }
+    });
+  });
 
   refreshTasks();
 });

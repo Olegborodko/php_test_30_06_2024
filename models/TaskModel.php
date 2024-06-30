@@ -52,15 +52,39 @@ class TaskModel
     }
   }
 
-  public function getTasks(){
-    $query = 'SELECT id, full_name, title, created_at, due_date FROM tasks';
+  public function getTasks()
+  {
+    $query = 'SELECT id, full_name, title, description, DATE_FORMAT(created_at, "%d.%m.%Y") as created_at, DATE_FORMAT(due_date, "%d.%m.%Y") as due_date FROM tasks';
 
     try {
       $stmt = $this->connDb->prepare($query);
       $stmt->execute();
-      
+
       $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $tasks;
+    } catch (PDOException $e) {
+      error_log('Database error: ' . $e->getMessage());
+      return false;
+    }
+  }
+
+  public function deleteTask($taskId)
+  {
+    if (!is_numeric($taskId)) {
+      return false;
+    }
+
+    $query = 'DELETE FROM tasks WHERE id = :id';
+
+    try {
+      $stmt = $this->connDb->prepare($query);
+      $stmt->execute([':id' => $taskId]);
+
+      if ($stmt->rowCount() > 0) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (PDOException $e) {
       error_log('Database error: ' . $e->getMessage());
       return false;

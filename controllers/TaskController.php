@@ -24,9 +24,6 @@ class TaskController
         case 'submitTask':
           $this->insertTask($_POST);
           break;
-        case 'deleteTask':
-          $this->deleteTask($_POST);
-          break;
         default:
           http_response_code(400);
           echo json_encode(['status' => 'error']);
@@ -34,6 +31,9 @@ class TaskController
       }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
       $this->getTasks();
+    } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
+      $taskId = $_GET['taskId'];
+      $this->deleteTask($taskId);
     } else {
       http_response_code(405);
       echo json_encode(['status' => 'error']);
@@ -87,8 +87,16 @@ class TaskController
     }
   }
 
-  private function deleteTask($data)
+  private function deleteTask($taskId)
   {
+    $result = $this->taskModel->deleteTask($taskId);
+
+    if ($result) {
+      echo json_encode(['status' => 'success']);
+    } else {
+      http_response_code(404);
+      echo json_encode(['status' => 'error']);
+    }
   }
 }
 
