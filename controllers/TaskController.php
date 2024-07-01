@@ -52,13 +52,18 @@ class TaskController
           ($data['findfield'] && !in_array($data['findfield'], $allowedFields))
         ) {
           http_response_code(400);
-          error_log('incorrect get tasks');
+
+          ob_start();
+          var_dump($data);
+          $result = ob_get_clean();
+
+          error_log('incorrect get tasks ' . $result);
           return;
         }
       }
       $this->getTasks($data);
     } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-      $taskId = filter_input(INPUT_GET, 'taskId', FILTER_SANITIZE_STRING);
+      $taskId = isset($_GET['taskId']) ? rawurlencode($_GET['taskId']) : null;
       $this->deleteTask($taskId);
     } else {
       http_response_code(405);

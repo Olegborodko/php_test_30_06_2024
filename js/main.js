@@ -91,47 +91,56 @@ $(document).ready(function () {
     }
   }
 
+  let tableFilter = {
+    'sorting': '',
+    'direction': '',
+    'findfield': '',
+    'findvalue': '',
+  }
+
   let directionСreatedAt = 'DESC';
   $("#taskTable .dataCreateSort").click(function () {
     directionСreatedAt = changeDirection(directionСreatedAt);
-    refreshTasks({
-      sorting: 'created_at',
-      direction: directionСreatedAt
-    });
+    tableFilter['sorting'] = 'created_at';
+    tableFilter['direction'] = directionСreatedAt;
+    refreshTasks(tableFilter);
   });
 
   let directionDueDate = 'DESC';
   $("#taskTable .dataEndSort").click(function () {
     directionDueDate = changeDirection(directionDueDate);
-    refreshTasks({
-      sorting: 'due_date',
-      direction: directionDueDate
-    });
+    tableFilter['sorting'] = 'due_date';
+    tableFilter['direction'] = directionDueDate;
+    refreshTasks(tableFilter);
   });
 
   $(document).on('input', '#taskTable #findFullName', function () {
     let value = $(this).val();
+    $("#taskTable #findTaskTitle").val('');
 
     if (value.length > 1) {
-      refreshTasks({
-        findfield: 'full_name',
-        findvalue: value,
-      })
+      tableFilter['findfield'] = 'full_name';
+      tableFilter['findvalue'] = value;
+      refreshTasks(tableFilter);
     } else {
-      refreshTasks({});
+      tableFilter['findfield'] = '';
+      tableFilter['findvalue'] = '';
+      refreshTasks(tableFilter);
     }
   });
 
   $(document).on('input', '#taskTable #findTaskTitle', function () {
     let value = $(this).val();
+    $("#taskTable #findFullName").val('');
 
     if (value.length > 1) {
-      refreshTasks({
-        findfield: 'title',
-        findvalue: value,
-      })
+      tableFilter['findfield'] = 'title';
+      tableFilter['findvalue'] = value;
+      refreshTasks(tableFilter);
     } else {
-      refreshTasks({});
+      tableFilter['findfield'] = '';
+      tableFilter['findvalue'] = '';
+      refreshTasks(tableFilter);
     }
   });
 
