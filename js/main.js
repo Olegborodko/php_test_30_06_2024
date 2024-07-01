@@ -20,7 +20,7 @@ $(document).ready(function () {
         $('#taskForm')[0].reset();
         $('#formErrors').html('');
         $('#taskForm .submit').prop('disabled', false);
-        refreshTasks();
+        refreshTasks({});
       },
       error: function (xhr) {
         $('#taskForm .submit').prop('disabled', false);
@@ -41,16 +41,16 @@ $(document).ready(function () {
     });
   });
 
-  function refreshTasks(sortingField = '', direction = 'ASC') {
+  function refreshTasks(data) {
     $.ajax({
-      url: 'controllers/TaskController.php?sorting=' + sortingField + '&direction=' + direction,
+      url: 'controllers/TaskController.php',
+      data,
       type: 'GET',
       success: function (data) {
-        let tableBody = $('#taskTable tbody');
-        tableBody.empty();
+        $('#taskTable tbody').children(':not(.findFields)').remove();
 
         data.data.forEach(function (task) {
-          var row = '<tr>' +
+          let row = '<tr>' +
             '<td>' + task.id + '</td>' +
             '<td>' + task.full_name + '</td>' +
             '<td>' + task.title + '</td>' +
@@ -59,7 +59,7 @@ $(document).ready(function () {
             '<td>' + task.due_date + '</td>' +
             '<td><button data-task="' + task.id + '" class="btn btn-info btnDeleteTask">Удалить</button></td>' +
             '</tr>';
-          tableBody.append(row);
+          $('#taskTable tbody .findFields').before(row);
         });
       },
       error: function (xhr) {
@@ -76,7 +76,7 @@ $(document).ready(function () {
       type: 'DELETE',
       data: taskId,
       success: function () {
-        refreshTasks();
+        refreshTasks({});
       },
       error: function (xhr) {
         console.error('Error: ', xhr.status, xhr.statusText);
@@ -84,8 +84,8 @@ $(document).ready(function () {
     });
   });
 
-  function changeDirection(value){
-    if (value ==='ASC'){
+  function changeDirection(value) {
+    if (value === 'ASC') {
       return 'DESC';
     } else {
       return 'ASC';
@@ -95,13 +95,45 @@ $(document).ready(function () {
   let directionСreatedAt = 'DESC';
   $("#taskTable .dataCreateSort").click(function () {
     directionСreatedAt = changeDirection(directionСreatedAt);
-    refreshTasks('created_at', directionСreatedAt);
+    refreshTasks({
+      sorting: 'created_at',
+      direction: directionСreatedAt
+    });
   });
 
   let directionDueDate = 'DESC';
   $("#taskTable .dataEndSort").click(function () {
     directionDueDate = changeDirection(directionDueDate);
-    refreshTasks('due_date', directionDueDate);
+    refreshTasks({
+      sorting: 'due_date',
+      direction: directionDueDate
+    });
+  });
+
+  $(document).on('input', '#taskTable #findFullName', function () {
+    let value = $(this).val();
+
+    if (value.length > 1) {
+      refreshTasks({
+        findfield: 'full_name',
+        findvalue: value,
+      })
+    } else {
+      refreshTasks({});
+    }
+  });
+
+  $(document).on('input', '#taskTable #findTaskTitle', function () {
+    let value = $(this).val();
+
+    if (value.length > 1) {
+      refreshTasks({
+        findfield: 'title',
+        findvalue: value,
+      })
+    } else {
+      refreshTasks({});
+    }
   });
 
   refreshTasks();

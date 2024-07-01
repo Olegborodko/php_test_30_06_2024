@@ -30,9 +30,30 @@ class TaskController
           break;
       }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-      $direction = filter_input(INPUT_GET, 'direction', FILTER_SANITIZE_STRING);
-      $sortingField = filter_input(INPUT_GET, 'sorting', FILTER_SANITIZE_STRING);
-      $this->getTasks($sortingField, $direction);
+      $filters = [
+        'sorting' => FILTER_SANITIZE_STRING,
+        'direction' => FILTER_SANITIZE_STRING,
+        'findfield' => FILTER_SANITIZE_STRING,
+        'findvalue' => FILTER_SANITIZE_STRING,
+      ];
+
+      $data = filter_input_array(INPUT_GET, $filters);
+
+      if ($data) {
+        $allowedFields = ['id', 'full_name', 'title', 'description', 'created_at', 'due_date'];
+        $allowedDirections = ['ASC', 'DESC'];
+
+        if (
+          ($data['sorting'] && !in_array($data['sorting'], $allowedFields)) ||
+          ($data['direction'] && !in_array($data['direction'], $allowedDirections)) ||
+          ($data['findfield'] && !in_array($data['findfield'], $allowedFields))
+        ) {
+          http_response_code(400);
+          error_log('incorrect get tasks');
+          return;
+        }
+      }
+      $this->getTasks($data);
     } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
       $taskId = filter_input(INPUT_GET, 'taskId', FILTER_SANITIZE_STRING);
       $this->deleteTask($taskId);
@@ -78,9 +99,9 @@ class TaskController
     }
   }
 
-  private function getTasks($sortingField, $direction)
+  private function getTasks($data)
   {
-    $data = $this->taskModel->getTasks($sortingField, $direction);
+    $data = $this->taskModel->getTasks($data);
     if ($data || (is_array($data) && empty($data))) {
       echo json_encode(['status' => 'success', 'data' => $data]);
     } else {

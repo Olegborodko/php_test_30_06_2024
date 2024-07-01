@@ -52,26 +52,29 @@ class TaskModel
     }
   }
 
-  public function getTasks($sortingField = false, $direction)
+  public function getTasks($data)
   {
+    $query = 'SELECT id, full_name, title, description, DATE_FORMAT(created_at, "%d.%m.%Y") as created_at, DATE_FORMAT(due_date, "%d.%m.%Y") as due_date FROM tasks WHERE 1';
 
-    $query = 'SELECT id, full_name, title, description, DATE_FORMAT(created_at, "%d.%m.%Y") as created_at, DATE_FORMAT(due_date, "%d.%m.%Y") as due_date FROM tasks';
+    $params = [];
 
-    if ($sortingField) {
-      $allowedFields = ['id', 'full_name', 'title', 'description', 'created_at', 'due_date'];
-      $allowedDirections = ['ASC', 'DESC'];
+    if ($data['findfield'] && $data['findfield'] == 'full_name' && $data['findvalue']) {
+      $query .= ' AND full_name LIKE :full_name';
+      $params[':full_name'] = '%' . $data['findvalue'] . '%';
+    }
 
-      if (!in_array($sortingField, $allowedFields) || !in_array($direction, $allowedDirections)) {
-        error_log('Sorting data is not correct ' . $sortingField . ' ' . $direction);
-        return false;
-      }
+    if ($data['findfield'] && $data['findfield'] == 'title' && $data['findvalue']) {
+      $query .= ' AND title LIKE :title';
+      $params[':title'] = '%' . $data['findvalue'] . '%';
+    }
 
-      $query .= ' ORDER BY ' . $sortingField . ' ' . $direction;
+    if ($data['sorting'] && $data['direction']) {
+      $query .= ' ORDER BY ' . $data['sorting'] . ' ' . $data['direction'];
     }
 
     try {
       $stmt = $this->connDb->prepare($query);
-      $stmt->execute();
+      $stmt->execute($params);
 
       $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
       return $tasks;
