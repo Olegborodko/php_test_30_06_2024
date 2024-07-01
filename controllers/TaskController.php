@@ -30,9 +30,11 @@ class TaskController
           break;
       }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
-      $this->getTasks();
+      $direction = filter_input(INPUT_GET, 'direction', FILTER_SANITIZE_STRING);
+      $sortingField = filter_input(INPUT_GET, 'sorting', FILTER_SANITIZE_STRING);
+      $this->getTasks($sortingField, $direction);
     } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-      $taskId = $_GET['taskId'];
+      $taskId = filter_input(INPUT_GET, 'taskId', FILTER_SANITIZE_STRING);
       $this->deleteTask($taskId);
     } else {
       http_response_code(405);
@@ -76,10 +78,10 @@ class TaskController
     }
   }
 
-  private function getTasks()
+  private function getTasks($sortingField, $direction)
   {
-    $data = $this->taskModel->getTasks();
-    if ($data) {
+    $data = $this->taskModel->getTasks($sortingField, $direction);
+    if ($data || (is_array($data) && empty($data))) {
       echo json_encode(['status' => 'success', 'data' => $data]);
     } else {
       http_response_code(404);

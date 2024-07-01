@@ -14,3 +14,7 @@
 .tableBlock #taskTable td, .tableBlock #taskTable th{
   padding: 10px;
 }
+
+#taskTable .dataCreateSort, #taskTable .dataEndSort{
+  cursor: pointer;
+}

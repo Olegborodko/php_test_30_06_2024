@@ -52,9 +52,22 @@ class TaskModel
     }
   }
 
-  public function getTasks()
+  public function getTasks($sortingField = false, $direction)
   {
+
     $query = 'SELECT id, full_name, title, description, DATE_FORMAT(created_at, "%d.%m.%Y") as created_at, DATE_FORMAT(due_date, "%d.%m.%Y") as due_date FROM tasks';
+
+    if ($sortingField) {
+      $allowedFields = ['id', 'full_name', 'title', 'description', 'created_at', 'due_date'];
+      $allowedDirections = ['ASC', 'DESC'];
+
+      if (!in_array($sortingField, $allowedFields) || !in_array($direction, $allowedDirections)) {
+        error_log('Sorting data is not correct ' . $sortingField . ' ' . $direction);
+        return false;
+      }
+
+      $query .= ' ORDER BY ' . $sortingField . ' ' . $direction;
+    }
 
     try {
       $stmt = $this->connDb->prepare($query);

@@ -15,7 +15,7 @@ $(document).ready(function () {
       url: 'controllers/TaskController.php',
       type: 'POST',
       data,
-      success: function (response) {
+      success: function () {
         alert('Задача добавлена успешно');
         $('#taskForm')[0].reset();
         $('#formErrors').html('');
@@ -41,9 +41,9 @@ $(document).ready(function () {
     });
   });
 
-  function refreshTasks() {
+  function refreshTasks(sortingField = '', direction = 'ASC') {
     $.ajax({
-      url: 'controllers/TaskController.php',
+      url: 'controllers/TaskController.php?sorting=' + sortingField + '&direction=' + direction,
       type: 'GET',
       success: function (data) {
         let tableBody = $('#taskTable tbody');
@@ -82,6 +82,26 @@ $(document).ready(function () {
         console.error('Error: ', xhr.status, xhr.statusText);
       }
     });
+  });
+
+  function changeDirection(value){
+    if (value ==='ASC'){
+      return 'DESC';
+    } else {
+      return 'ASC';
+    }
+  }
+
+  let directionСreatedAt = 'DESC';
+  $("#taskTable .dataCreateSort").click(function () {
+    directionСreatedAt = changeDirection(directionСreatedAt);
+    refreshTasks('created_at', directionСreatedAt);
+  });
+
+  let directionDueDate = 'DESC';
+  $("#taskTable .dataEndSort").click(function () {
+    directionDueDate = changeDirection(directionDueDate);
+    refreshTasks('due_date', directionDueDate);
   });
 
   refreshTasks();

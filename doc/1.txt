@@ -1,3 +1,2 @@
 - $action = isset($_POST['action']) ? $_POST['action'] : '';
   это нужно будет убрать
-- 
