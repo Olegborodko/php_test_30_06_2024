@@ -3,3 +3,9 @@ sudo tail -n 50 /opt/lampp/logs/php_error_log
 
 очистить error log
 sudo truncate -s 0 /opt/lampp/logs/php_error_log
+
+вывести $_POST в error_log
+ob_start();
+var_dump($_POST);
+$result = ob_get_clean();
+error_log($result);

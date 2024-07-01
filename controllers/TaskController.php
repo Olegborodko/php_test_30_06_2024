@@ -15,20 +15,23 @@ class TaskController
     $this->emailInstance = new EmailService();
   }
 
+  private function sanitizeData($data)
+  {
+    return htmlspecialchars($data, ENT_QUOTES, 'UTF-8');
+  }
+
   public function handleRequest()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $action = isset($_POST['action']) ? $_POST['action'] : '';
+      $data = [
+        "fullname" => $this->sanitizeData($_POST['fullname']),
+        "email" => $this->sanitizeData($_POST['email']),
+        "duedate" => $this->sanitizeData($_POST['duedate']),
+        "title" => $this->sanitizeData($_POST['title']),
+        "description" => $this->sanitizeData($_POST['description']),
+      ];
 
-      switch ($action) {
-        case 'submitTask':
-          $this->insertTask($_POST);
-          break;
-        default:
-          http_response_code(400);
-          echo json_encode(['status' => 'error']);
-          break;
-      }
+      $this->insertTask($data);
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
       $filters = [
         'sorting' => FILTER_SANITIZE_STRING,

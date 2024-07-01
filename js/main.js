@@ -9,12 +9,11 @@ $(document).ready(function () {
     event.preventDefault();
 
     $('#taskForm .submit').prop('disabled', true);
-    let data = $(this).serialize() + '&action=submitTask';
 
     $.ajax({
       url: 'controllers/TaskController.php',
       type: 'POST',
-      data,
+      data: $(this).serialize(),
       success: function () {
         alert('Задача добавлена успешно');
         $('#taskForm')[0].reset();
