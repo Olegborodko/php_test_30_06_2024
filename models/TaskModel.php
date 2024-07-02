@@ -54,7 +54,7 @@ class TaskModel
 
   public function getTasks($data)
   {
-    $query = 'SELECT id, full_name, title, description, DATE_FORMAT(created_at, "%d.%m.%Y") as created_at, DATE_FORMAT(due_date, "%d.%m.%Y") as due_date FROM tasks WHERE 1';
+    $query = 'SELECT id, full_name, title, description, created_at, due_date FROM tasks WHERE 1';
 
     $params = [];
 
@@ -77,6 +77,12 @@ class TaskModel
       $stmt->execute($params);
 
       $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+      foreach ($tasks as &$task) {
+        $task['created_at'] = date('d.m.Y', strtotime($task['created_at']));
+        $task['due_date'] = date('d.m.Y', strtotime($task['due_date']));
+      }
+
       return $tasks;
     } catch (PDOException $e) {
       error_log('Database error: ' . $e->getMessage());

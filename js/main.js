@@ -10,10 +10,12 @@ $(document).ready(function () {
 
     $('#taskForm .submit').prop('disabled', true);
 
+    let data = $(this).serialize() + '&action=insertTask';
+
     $.ajax({
       url: 'controllers/TaskController.php',
       type: 'POST',
-      data: $(this).serialize(),
+      data,
       success: function () {
         alert('Задача добавлена успешно');
         $('#taskForm')[0].reset();
@@ -71,9 +73,12 @@ $(document).ready(function () {
     let taskId = $(this).attr("data-task");
 
     $.ajax({
-      url: 'controllers/TaskController.php?taskId=' + taskId,
-      type: 'DELETE',
-      data: taskId,
+      url: 'controllers/TaskController.php',
+      type: 'POST',
+      data: {
+        taskId,
+        action: 'deleteTask',
+      },
       success: function () {
         refreshTasks({});
       },

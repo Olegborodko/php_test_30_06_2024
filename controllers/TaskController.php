@@ -23,15 +23,31 @@ class TaskController
   public function handleRequest()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $data = [
-        "fullname" => $this->sanitizeData($_POST['fullname']),
-        "email" => $this->sanitizeData($_POST['email']),
-        "duedate" => $this->sanitizeData($_POST['duedate']),
-        "title" => $this->sanitizeData($_POST['title']),
-        "description" => $this->sanitizeData($_POST['description']),
-      ];
+      $action = $this->sanitizeData($_POST['action']);
+      $action = $action ? $action : '';
 
-      $this->insertTask($data);
+      switch ($action) {
+        case 'insertTask':
+          $data = [
+            "fullname" => $this->sanitizeData($_POST['fullname']),
+            "email" => $this->sanitizeData($_POST['email']),
+            "duedate" => $this->sanitizeData($_POST['duedate']),
+            "title" => $this->sanitizeData($_POST['title']),
+            "description" => $this->sanitizeData($_POST['description']),
+          ];
+
+          $this->insertTask($data);
+          break;
+        case 'deleteTask':
+          $taskId = $this->sanitizeData($_POST['taskId']);
+
+          $this->deleteTask($taskId);
+          break;
+        default:
+          http_response_code(400);
+          echo json_encode(['status' => 'error']);
+          break;
+      }
     } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') {
       $filters = [
         'sorting' => FILTER_SANITIZE_STRING,
@@ -62,9 +78,6 @@ class TaskController
         }
       }
       $this->getTasks($data);
-    } elseif ($_SERVER['REQUEST_METHOD'] == 'DELETE') {
-      $taskId = isset($_GET['taskId']) ? rawurlencode($_GET['taskId']) : null;
-      $this->deleteTask($taskId);
     } else {
       http_response_code(405);
       echo json_encode(['status' => 'error']);
